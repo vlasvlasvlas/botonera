@@ -4,6 +4,7 @@
  */
 
 import { SamplePlayer } from '../audio/sample-player.js';
+import { YouTubePlayer } from '../audio/youtube-player.js';
 
 export class PadGrid {
     /**
@@ -28,6 +29,12 @@ export class PadGrid {
 
         /** @type {Function|null} - Callback when Add button is clicked: (sourceName) => void */
         this.onAddClick = null;
+
+        /** @type {Function|null} - Callback when YouTube pad is triggered: (ytPlayer) => void */
+        this.onYouTubePlay = null;
+
+        /** @type {HTMLElement|null} - Hidden container for YT iframes */
+        this._ytHiddenContainer = null;
     }
 
     /**
@@ -47,15 +54,27 @@ export class PadGrid {
     _createPlayers() {
         for (const source of this.packConfig.sources) {
             for (const sampleDef of source.samples) {
-                const player = new SamplePlayer(sampleDef, source.type);
-                this.players.set(sampleDef.id, player);
+                if (source.type === 'youtube' && sampleDef.youtube) {
+                    // YouTube player
+                    const ytPlayer = new YouTubePlayer(sampleDef);
+                    this.players.set(sampleDef.id, ytPlayer);
 
-                if (sampleDef.key) {
-                    this.keyMap.set(sampleDef.key.toLowerCase(), sampleDef.id);
+                    if (sampleDef.key) {
+                        this.keyMap.set(sampleDef.key.toLowerCase(), sampleDef.id);
+                    }
+
+                    ytPlayer.on((event, p) => this._updatePadState(p.config.id, event));
+                } else {
+                    // Regular audio player
+                    const player = new SamplePlayer(sampleDef, source.type);
+                    this.players.set(sampleDef.id, player);
+
+                    if (sampleDef.key) {
+                        this.keyMap.set(sampleDef.key.toLowerCase(), sampleDef.id);
+                    }
+
+                    player.on((event, p) => this._updatePadState(p.config.id, event));
                 }
-
-                // Listen for state changes
-                player.on((event, p) => this._updatePadState(p.config.id, event));
             }
         }
     }
@@ -147,7 +166,8 @@ export class PadGrid {
      */
     _createPad(sampleDef, color) {
         const pad = document.createElement('button');
-        pad.className = 'pad loading';
+        const isYouTube = !!sampleDef.youtube;
+        pad.className = `pad loading${isYouTube ? ' youtube-pad' : ''}`;
         pad.id = `pad-${sampleDef.id}`;
         pad.dataset.sampleId = sampleDef.id;
 
@@ -156,10 +176,11 @@ export class PadGrid {
         pad.style.setProperty('--pad-glow', color);
 
         pad.innerHTML = `
+      ${isYouTube ? '<span class="pad-yt-icon">▶</span>' : ''}
       <span class="pad-label">${sampleDef.label}</span>
       ${sampleDef.key ? `<span class="pad-key">${sampleDef.key.toUpperCase()}</span>` : ''}
       <div class="pad-progress" style="width: 0%"></div>
-      <button class="pad-fx-btn" data-sample-id="${sampleDef.id}" title="FX">🎚</button>
+      ${!isYouTube ? `<button class="pad-fx-btn" data-sample-id="${sampleDef.id}" title="FX">🎚</button>` : ''}
       <button class="pad-delete-btn" data-sample-id="${sampleDef.id}" title="Delete sample">🗑</button>
     `;
 
@@ -218,7 +239,21 @@ export class PadGrid {
      */
     triggerSample(sampleId) {
         const player = this.players.get(sampleId);
-        if (player) {
+        if (!player) return;
+
+        // If it's a YouTube player, notify the app to show the video viewer
+        if (player instanceof YouTubePlayer) {
+            // Stop other YouTube players
+            for (const [id, p] of this.players) {
+                if (p instanceof YouTubePlayer && id !== sampleId && p.playing) {
+                    p.stop();
+                }
+            }
+            player.trigger();
+            if (this.onYouTubePlay) {
+                this.onYouTubePlay(player);
+            }
+        } else {
             player.trigger();
         }
     }
@@ -279,12 +314,26 @@ export class PadGrid {
      * @returns {Promise<void>}
      */
     async _loadAll() {
-        const promises = [];
+        // Create hidden container for YouTube iframes
+        this._ytHiddenContainer = document.createElement('div');
+        this._ytHiddenContainer.id = 'yt-hidden-players';
+        this._ytHiddenContainer.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;left:-9999px;';
+        document.body.appendChild(this._ytHiddenContainer);
+
+        const audioPromises = [];
+        const ytPromises = [];
+
         for (const player of this.players.values()) {
-            promises.push(player.load());
+            if (player instanceof YouTubePlayer) {
+                ytPromises.push(player.init(this._ytHiddenContainer));
+            } else {
+                audioPromises.push(player.load());
+            }
         }
-        await Promise.allSettled(promises);
-        console.log(`[PadGrid] All samples loaded (${this.players.size} total)`);
+
+        // Load audio and YouTube in parallel
+        await Promise.allSettled([...audioPromises, ...ytPromises]);
+        console.log(`[PadGrid] All samples loaded (${this.players.size} total, ${ytPromises.length} YouTube)`);
     }
 
     /**

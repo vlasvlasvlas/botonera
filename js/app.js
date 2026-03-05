@@ -9,6 +9,7 @@ import { PadGrid } from './ui/pad-grid.js';
 import { KeyboardHandler } from './ui/keyboard.js';
 import { FXPanel } from './ui/fx-panel.js';
 import { EditorUI } from './ui/editor-ui.js';
+import { VideoViewer } from './ui/video-viewer.js';
 
 class BotoneraApp {
     constructor() {
@@ -29,6 +30,9 @@ class BotoneraApp {
 
         /** @type {string|null} - Active source group for recording */
         this._activeSourceName = null;
+
+        /** @type {VideoViewer|null} */
+        this.videoViewer = null;
 
         /** @type {import('./config/loader.js').PackConfig|null} */
         this.currentPack = null;
@@ -202,6 +206,14 @@ class BotoneraApp {
             if (this.editor) {
                 this.editor.open();
             }
+        };
+
+        // Wire up YouTube play callback
+        this.padGrid.onYouTubePlay = (ytPlayer) => {
+            if (!this.videoViewer) {
+                this.videoViewer = new VideoViewer();
+            }
+            this.videoViewer.show(ytPlayer);
         };
 
         await this.padGrid.init();

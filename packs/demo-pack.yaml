@@ -143,3 +143,39 @@ sources:
           type: sine
           frequency: 1200
           duration: 0.05
+
+  - name: "Videos"
+    type: "youtube"
+    color: "#ff0000"
+    samples:
+      - id: yt-bowie
+        label: "Bowie - Heroes"
+        key: "1"
+        youtube:
+          videoId: "lXgkuM2NhYI"
+          start: 60
+          end: 75
+
+      - id: yt-kraftwerk
+        label: "Kraftwerk"
+        key: "2"
+        youtube:
+          videoId: "OQIYEPe6DWY"
+          start: 30
+          end: 45
+
+      - id: yt-daftpunk
+        label: "Daft Punk"
+        key: "3"
+        youtube:
+          videoId: "gAjR4_CbPpQ"
+          start: 50
+          end: 65
+
+      - id: yt-aphex
+        label: "Aphex Twin"
+        key: "4"
+        youtube:
+          videoId: "RhHkUg-QCwk"
+          start: 10
+          end: 25
