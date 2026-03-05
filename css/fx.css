@@ -1,0 +1,360 @@
+/* ═══════════════════════════════════════════
+   BOTONERA — FX Panel Styles
+   Sleek FX controls with knobs and sliders
+   ═══════════════════════════════════════════ */
+
+/* ── FX Panel Container ── */
+.fx-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    z-index: var(--z-fx);
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.fx-panel.open {
+    transform: translateY(0);
+}
+
+/* ── FX Panel Header ── */
+.fx-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    z-index: 2;
+}
+
+.fx-panel-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.fx-panel-title h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+}
+
+.fx-target-name {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.fx-panel-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+/* ── FX Sections ── */
+.fx-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.fx-section {
+    background: var(--bg-secondary);
+    padding: var(--space-md);
+}
+
+.fx-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.fx-section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.fx-section-title .fx-icon {
+    font-size: 0.9rem;
+}
+
+/* FX Toggle Switch */
+.fx-toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all var(--transition-fast);
+}
+
+.fx-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+
+.fx-toggle.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.fx-toggle.active::after {
+    left: 18px;
+    background: var(--bg-primary);
+}
+
+/* ── FX Controls ── */
+.fx-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.fx-control {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.fx-control-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 55px;
+    text-align: right;
+}
+
+.fx-control-value {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* ── FX Slider ── */
+.fx-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-tertiary);
+    outline: none;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.fx-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(100, 255, 218, 0.2);
+    transition: transform 0.1s ease;
+}
+
+.fx-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
+
+.fx-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    border: none;
+}
+
+/* Slider colors by FX type */
+.fx-section[data-fx="delay"] .fx-slider::-webkit-slider-thumb {
+    background: #45b7d1;
+}
+
+.fx-section[data-fx="reverb"] .fx-slider::-webkit-slider-thumb {
+    background: #7c4dff;
+}
+
+.fx-section[data-fx="distortion"] .fx-slider::-webkit-slider-thumb {
+    background: #ff6b9d;
+}
+
+.fx-section[data-fx="filter"] .fx-slider::-webkit-slider-thumb {
+    background: #ffab40;
+}
+
+.fx-section[data-fx="compressor"] .fx-slider::-webkit-slider-thumb {
+    background: #69f0ae;
+}
+
+.fx-section[data-fx="delay"] .fx-toggle.active {
+    background: #45b7d1;
+    border-color: #45b7d1;
+}
+
+.fx-section[data-fx="reverb"] .fx-toggle.active {
+    background: #7c4dff;
+    border-color: #7c4dff;
+}
+
+.fx-section[data-fx="distortion"] .fx-toggle.active {
+    background: #ff6b9d;
+    border-color: #ff6b9d;
+}
+
+.fx-section[data-fx="filter"] .fx-toggle.active {
+    background: #ffab40;
+    border-color: #ffab40;
+}
+
+.fx-section[data-fx="compressor"] .fx-toggle.active {
+    background: #69f0ae;
+    border-color: #69f0ae;
+}
+
+/* Disabled state */
+.fx-section.disabled .fx-controls {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* ── Filter Type Select ── */
+.fx-select {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+    flex: 1;
+}
+
+.fx-select:focus {
+    border-color: var(--accent-primary);
+}
+
+/* ── FX Indicator on Pad ── */
+.pad-fx-indicator {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    display: flex;
+    gap: 2px;
+    z-index: 3;
+}
+
+.pad-fx-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+.pad-fx-dot.delay {
+    background: #45b7d1;
+}
+
+.pad-fx-dot.reverb {
+    background: #7c4dff;
+}
+
+.pad-fx-dot.distortion {
+    background: #ff6b9d;
+}
+
+.pad-fx-dot.filter {
+    background: #ffab40;
+}
+
+.pad-fx-dot.compressor {
+    background: #69f0ae;
+}
+
+/* ── FX Button on Pad (to open FX panel) ── */
+.pad-fx-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    opacity: 0;
+    transition: all var(--transition-fast);
+}
+
+.pad:hover .pad-fx-btn {
+    opacity: 1;
+}
+
+.pad-fx-btn:hover {
+    background: rgba(100, 255, 218, 0.2);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .fx-sections {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .fx-panel {
+        max-height: 60vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .fx-sections {
+        grid-template-columns: 1fr;
+    }
+}
