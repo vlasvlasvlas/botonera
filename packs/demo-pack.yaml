@@ -1,0 +1,145 @@
+name: "Demo Pack — Drums & Synth"
+bpm: 120
+
+sources:
+  - name: "Drums"
+    type: "audio"
+    color: "#ff6b35"
+    samples:
+      - id: kick
+        label: "Kick"
+        key: "q"
+        mode: oneshot
+        _synthetic:
+          type: kick
+          duration: 0.5
+
+      - id: snare
+        label: "Snare"
+        key: "w"
+        mode: oneshot
+        _synthetic:
+          type: snare
+          duration: 0.3
+
+      - id: hihat
+        label: "Hi-Hat"
+        key: "e"
+        mode: oneshot
+        _synthetic:
+          type: hihat
+          duration: 0.15
+
+      - id: hihat-open
+        label: "Open HH"
+        key: "r"
+        mode: oneshot
+        _synthetic:
+          type: noise
+          duration: 0.4
+
+  - name: "Bass & Lead"
+    type: "audio"
+    color: "#4ecdc4"
+    samples:
+      - id: bass-c
+        label: "Bass C"
+        key: "a"
+        mode: oneshot
+        _synthetic:
+          type: sine
+          frequency: 65.41
+          duration: 0.6
+
+      - id: bass-e
+        label: "Bass E"
+        key: "s"
+        mode: oneshot
+        _synthetic:
+          type: sine
+          frequency: 82.41
+          duration: 0.6
+
+      - id: bass-g
+        label: "Bass G"
+        key: "d"
+        mode: oneshot
+        _synthetic:
+          type: sine
+          frequency: 98.00
+          duration: 0.6
+
+      - id: lead-c4
+        label: "Lead C4"
+        key: "f"
+        mode: oneshot
+        _synthetic:
+          type: sawtooth
+          frequency: 261.63
+          duration: 0.4
+
+      - id: lead-e4
+        label: "Lead E4"
+        key: "g"
+        mode: oneshot
+        _synthetic:
+          type: sawtooth
+          frequency: 329.63
+          duration: 0.4
+
+      - id: lead-g4
+        label: "Lead G4"
+        key: "h"
+        mode: oneshot
+        _synthetic:
+          type: sawtooth
+          frequency: 392.00
+          duration: 0.4
+
+  - name: "FX & Pads"
+    type: "audio"
+    color: "#c7f464"
+    samples:
+      - id: rise
+        label: "Rise"
+        key: "z"
+        mode: oneshot
+        _synthetic:
+          type: sawtooth
+          frequency: 200
+          duration: 1.0
+
+      - id: noise-burst
+        label: "Noise"
+        key: "x"
+        mode: oneshot
+        _synthetic:
+          type: noise
+          duration: 0.5
+
+      - id: beep
+        label: "Beep"
+        key: "c"
+        mode: oneshot
+        _synthetic:
+          type: square
+          frequency: 880
+          duration: 0.1
+
+      - id: sub
+        label: "Sub"
+        key: "v"
+        mode: oneshot
+        _synthetic:
+          type: triangle
+          frequency: 40
+          duration: 0.8
+
+      - id: blip
+        label: "Blip"
+        key: "b"
+        mode: oneshot
+        _synthetic:
+          type: sine
+          frequency: 1200
+          duration: 0.05

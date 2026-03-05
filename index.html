@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description"
+    content="Botonera — Web Sample Trigger Pad & Looper Station. Trigger samples, record audio, apply FX, and loop.">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>Botonera — Sample Trigger & Looper</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/pads.css">
+  <link rel="stylesheet" href="css/fx.css">
+  <link rel="stylesheet" href="css/editor.css">
+
+  <!-- js-yaml CDN for YAML pack loading -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <!-- Favicon (inline SVG-based) -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎛️</text></svg>">
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Click anywhere to start audio engine</p>
+    </div>
+
+    <!-- Header / Toolbar -->
+    <header class="app-header">
+      <div class="app-logo">
+        <h1>⚡ BOTONERA</h1>
+        <span class="version">v1.0</span>
+      </div>
+
+      <div class="header-controls">
+        <!-- Pack Selector -->
+        <div class="pack-selector">
+          <select id="pack-select" title="Select sample pack">
+            <option value="demo" selected>Demo Pack — Synthetic</option>
+            <option value="demo-pack.yaml">Demo Pack (YAML)</option>
+          </select>
+        </div>
+
+        <!-- Master Volume -->
+        <div class="master-volume-wrap">
+          <input type="range" id="master-volume" min="0" max="1" step="0.01" value="0.85" title="Master Volume"
+            class="volume-slider">
+        </div>
+
+        <!-- VU Meter -->
+        <div class="vu-meter" title="Output Level">
+          <div id="master-vu-fill" class="vu-fill"></div>
+        </div>
+
+        <!-- Stop All -->
+        <button id="stop-all-btn" class="icon-btn danger" title="Stop All (Spacebar)">
+          ⬛
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Pack Name -->
+      <div class="section-header">
+        <h2 id="pack-name">Loading...</h2>
+        <span class="badge">LIVE</span>
+      </div>
+
+      <!-- Sources & Pads Grid -->
+      <div id="sources-container" class="sources-container">
+        <!-- Dynamically populated by PadGrid -->
+      </div>
+
+      <!-- Keyboard Shortcut Legend -->
+      <div class="keyboard-legend" id="keyboard-legend">
+        <div class="legend-header">
+          <span class="legend-icon">⌨️</span>
+          <span>Keyboard Shortcuts</span>
+        </div>
+        <div class="legend-keys" id="legend-keys">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+  </div>
+
+  <!-- App Script (ES Modules) -->
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Inline styles for header-specific components -->
+  <style>
+    /* Master Volume Slider */
+    .master-volume-wrap {
+      display: flex;
+      align-items: center;
+      width: 80px;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg-tertiary);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(100, 255, 218, 0.3);
+      transition: transform 0.1s ease;
+    }
+
+    .volume-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    /* VU Meter */
+    .vu-meter {
+      width: 60px;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .vu-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-primary);
+      border-radius: 3px;
+      transition: width 60ms ease-out, background 200ms ease;
+    }
+
+    /* Keyboard Legend */
+    .keyboard-legend {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: var(--space-md);
+      margin-top: auto;
+    }
+
+    .legend-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .legend-icon {
+      font-size: 1rem;
+    }
+
+    .legend-keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .legend-key {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+    }
+
+    .legend-key kbd {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      background: rgba(100, 255, 218, 0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    .legend-key span {
+      color: var(--text-secondary);
+    }
+
+    /* Mobile: hide keyboard legend */
+    @media (max-width: 768px) {
+      .keyboard-legend {
+        display: none;
+      }
+
+      .master-volume-wrap {
+        width: 60px;
+      }
+    }
+  </style>
+</body>
+
+</html>

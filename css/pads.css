@@ -1,0 +1,307 @@
+/* ═══════════════════════════════════════════
+   BOTONERA — Pad Grid Styles
+   Interactive musical pads with visual feedback
+   ═══════════════════════════════════════════ */
+
+/* ── Pad Grid ── */
+.pad-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--space-sm);
+}
+
+/* ── Individual Pad ── */
+.pad {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+
+    /* Base appearance */
+    background: var(--pad-color, var(--bg-tertiary));
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+
+    /* Subtle inner border */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.3);
+
+    transition: all var(--transition-fast);
+    overflow: hidden;
+    min-height: 80px;
+}
+
+/* Pad gradient overlay for depth */
+.pad::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            transparent 50%,
+            rgba(0, 0, 0, 0.15) 100%);
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+/* Glow ring on activation */
+.pad::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: calc(var(--radius-md) + 3px);
+    background: transparent;
+    border: 2px solid transparent;
+    pointer-events: none;
+    transition: all var(--transition-fast);
+    opacity: 0;
+}
+
+/* ── Pad States ── */
+
+/* Hover */
+.pad:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+        0 4px 16px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.15);
+}
+
+/* Active / Playing */
+.pad:active,
+.pad.playing {
+    transform: translateY(1px) scale(0.97);
+    filter: brightness(1.4);
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.4),
+        0 0 20px var(--pad-glow, rgba(100, 255, 218, 0.3));
+}
+
+.pad.playing::after {
+    border-color: var(--pad-glow, var(--accent-primary));
+    opacity: 1;
+    animation: pad-pulse 0.6s ease-out;
+}
+
+/* Loading state */
+.pad.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.pad.loading::before {
+    background: repeating-linear-gradient(-45deg,
+            transparent,
+            transparent 4px,
+            rgba(255, 255, 255, 0.03) 4px,
+            rgba(255, 255, 255, 0.03) 8px);
+    animation: loading-stripes 1s linear infinite;
+}
+
+/* Error state */
+.pad.error {
+    opacity: 0.4;
+    border: 1px dashed var(--accent-danger);
+}
+
+/* ── Pad Content ── */
+.pad-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pad-key {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Waveform visualization inside pad ── */
+.pad-waveform {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* ── Progress indicator for playing samples ── */
+.pad-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    transition: width 50ms linear;
+    z-index: 2;
+}
+
+/* ── Volume indicator ── */
+.pad-volume {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 3px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.pad-volume-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    transition: height 60ms ease-out;
+}
+
+/* ── Delete Button on Pad ── */
+.pad-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    opacity: 0;
+    transition: all var(--transition-fast);
+}
+
+.pad:hover .pad-delete-btn {
+    opacity: 1;
+}
+
+.pad-delete-btn:hover {
+    background: rgba(255, 80, 80, 0.3);
+    border-color: #ff5050;
+    color: #ff5050;
+}
+
+/* ── Add Sample Pad ── */
+.pad.add-pad {
+    background: transparent;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+}
+
+.pad.add-pad:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+    filter: none;
+}
+
+.pad.add-pad::before,
+.pad.add-pad::after {
+    display: none;
+}
+
+/* ── Animations ── */
+@keyframes pad-pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes loading-stripes {
+    to {
+        background-position: 8px 0;
+    }
+}
+
+/* ── Responsive Pad Grid ── */
+@media (max-width: 768px) {
+    .pad-grid {
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: 6px;
+    }
+
+    .pad {
+        min-height: 70px;
+    }
+
+    .pad-label {
+        font-size: 0.6rem;
+    }
+
+    .pad-key {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pad-grid {
+        grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+        gap: 4px;
+    }
+
+    .pad {
+        min-height: 60px;
+        border-radius: var(--radius-sm);
+    }
+}
+
+/* ── Touch-specific ── */
+@media (hover: none) {
+    .pad:hover {
+        transform: none;
+        filter: none;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+}
